@@ -11,8 +11,8 @@
     <title>Shino Channel</title><meta name="author" content="Shino">
 <meta name="description" content="">
   <meta itemprop="name" content="Shino Channel">
-  <meta itemprop="datePublished" content="2025-03-23T14:21:58+08:00">
-  <meta itemprop="dateModified" content="2025-03-23T14:21:58+08:00">
+  <meta itemprop="datePublished" content="2025-04-20T16:23:46+08:00">
+  <meta itemprop="dateModified" content="2025-04-20T16:23:46+08:00">
   <meta itemprop="image" content="https://www.sh1no.icu/avr.png"><meta property="og:url" content="https://www.sh1no.icu/">
   <meta property="og:site_name" content="Shino Channel">
   <meta property="og:title" content="Shino Channel">
@@ -107,7 +107,11 @@
     </a><a href="https://space.bilibili.com/96243678" title="bilibili"target="_blank" rel="external nofollow noopener noreferrer me"><i class="fa-brands fa-bilibili" aria-hidden="true"></i>
     </a><a href="mailto:akalineblog@163.com" title="Email"target="_blank" rel="external nofollow noopener noreferrer me"><i class="fa-regular fa-envelope fa-fw" aria-hidden="true"></i>
     </a></div></div>
-<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/posts/hitcon2023/">Hitcon2023 Reverse Wps | AK With StrawHat</a>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/posts/0gn/">0ctf/Tctf2023-0gn Nodejs引擎魔改分析</a>
+  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/avr.png" alt="Shino" data-title="Shino" width="20" height="20" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;Shino</span></span>&nbsp;<span class="post-publish" title='2023-12-13 20:24:36'>published on <time datetime="2023-12-13">2023-12-13</time></span></div><div class="content">碎碎念本文也可以改名《Shino 为什么是一个啥比》，一个首波逆向题坐牢两天没做出来（还是我太菜了）
+</div><div class="post-footer">
+    <a href="/posts/0gn/">Read More</a></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/posts/hitcon2023/">Hitcon2023 Reverse Wps | AK With StrawHat</a>
   </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/avr.png" alt="Shino" data-title="Shino" width="20" height="20" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;Shino</span></span>&nbsp;<span class="post-publish" title='2023-09-09 23:23:25'>published on <time datetime="2023-09-09">2023-09-09</time></span></div><div class="content">碎碎念应该是在 Straw Hat 队认真打的第一场国际赛事吧，可惜半天左右就把逆向全打完了（驾驶员技能发动 我一个人就够了.jpg），有些失望（但是很爽）。
 </div><div class="post-footer">
     <a href="/posts/hitcon2023/">Read More</a></div>
@@ -133,15 +137,6 @@ https://github.com/0xjiayu/go_parser
 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 .text:00000000004011B9 vuln proc near ; CODE XREF: main+17↓p .text:00000000004011B9 .text:00000000004011B9 buf = byte ptr -10h .text:00000000004011B9 .text:00000000004011B9 ; __unwind { .text:00000000004011B9 endbr64 .text:00000000004011BD push rbp .text:00000000004011BE mov rbp, rsp .text:00000000004011C1 mov rax, 1 .text:00000000004011C8 mov rdx, 26h ; &#39;&amp;&#39; ; count .text:00000000004011CF lea rsi, nkctf ; &#34;Welcome to the binary world of NKCTF!\n&#34; .text:00000000004011D7 mov rdi, rax ; fd .text:00000000004011DA syscall ; LINUX - sys_write .text:00000000004011DC xor rax, rax .text:00000000004011DF mov rdx, 200h ; count .text:00000000004011E6 lea rsi, [rsp+buf] ; buf .text:00000000004011EB mov rdi, rax ; fd .text:00000000004011EE syscall ; LINUX - sys_read .text:00000000004011F0 mov eax, 0 .text:00000000004011F5 pop rbp .text:00000000004011F6 retn .text:00000000004011F6 ; } // starts at 4011B9 .text:00000000004011F6 vuln endp 一开始以为是ret2libc，本想想办法leak地址，发现无法控制rax为1调用输出的syscall。ROPgadget发现了一些奇怪的东西：
 </div><div class="post-footer">
     <a href="/posts/srop/">Read More</a></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/posts/hitcon2022/">Hitcon2022-Checker Windows驱动文件分析</a>
-  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/avr.png" alt="Shino" data-title="Shino" width="20" height="20" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;Shino</span></span>&nbsp;<span class="post-publish" title='2022-12-01 15:32:57'>published on <time datetime="2022-12-01">2022-12-01</time></span></div><div class="content">with Katzebin 就不传附件了
-附件有checker.exe和check_drv.sys两个文件
-checker.exe逻辑十分简单
-1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 int __cdecl main(int argc, const char **argv, const char **envp) { HANDLE FileW; // rax char *v4; // rcx char OutBuffer[4]; // [rsp+40h] [rbp-18h] BYREF DWORD BytesReturned; // [rsp+44h] [rbp-14h] BYREF FileW = CreateFileW(L&#34;\\\\.\\hitcon_checker&#34;, 0xC0000000, 0, 0i64, 3u, 4u, 0i64); qword_140003620 = (__int64)FileW; if ( FileW == (HANDLE)-1i64 ) { sub_140001010(&#34;driver not found\n&#34;); exit(0); } OutBuffer[0] = 0; DeviceIoControl(FileW, 0x222080u, 0i64, 0, OutBuffer, 1u, &amp;BytesReturned, 0i64); v4 = &#34;correct\n&#34;; if ( !OutBuffer[0] ) v4 = &#34;wrong\n&#34;; sub_140001010(v4); system(&#34;pause&#34;); return 0; } https://www.cnblogs.com/lsh123/p/7354573.html
-具体可以参照这篇文章，程序整体逻辑是检测设备hitcon_checker并与该设备的驱动交互。可以发现这里的交互操作只有读取，可以知道整体逻辑应该是由hitcon_checker设备发送IRP（I/O Request Package）包由驱动程序处理，根据处理结果返回正误。
-但是我们没有这个设备&hellip;.
-</div><div class="post-footer">
-    <a href="/posts/hitcon2022/">Read More</a></div>
 </article><ul class="pagination"><li class="page-item">
           <span class="page-link">
             <a href="/">1</a>
@@ -162,7 +157,7 @@ checker.exe逻辑十分简单
           <span class="page-link" aria-hidden="true">&hellip;</span>
         </li><li class="page-item">
           <span class="page-link">
-            <a href="/page/6/">6</a>
+            <a href="/page/7/">7</a>
           </span>
         </li></ul></div></main><footer class="footer">
     <div class="footer-container"><div class="footer-line powered">Powered by <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.144.2"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> | Theme - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.17-8b402129"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>

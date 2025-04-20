@@ -1,19 +1,25 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://www.sh1no.icu/posts/aebec83/</loc>
-    <lastmod>2025-03-23T14:21:58+08:00</lastmod>
+    <loc>https://www.sh1no.icu/posts/7e3c0f1/</loc>
+    <lastmod>2025-04-20T16:23:46+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://www.sh1no.icu/posts/</loc>
-    <lastmod>2025-03-23T14:21:58+08:00</lastmod>
+    <lastmod>2025-04-20T16:23:46+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://www.sh1no.icu/</loc>
+    <lastmod>2025-04-20T16:23:46+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://www.sh1no.icu/posts/aebec83/</loc>
     <lastmod>2025-03-23T14:21:58+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>

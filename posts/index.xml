@@ -8,8 +8,15 @@
     <language>zh-CN</language>
     <managingEditor>akalineblog@163.com (Shino)</managingEditor>
     <webMaster>akalineblog@163.com (Shino)</webMaster>
-    <lastBuildDate>Sun, 23 Mar 2025 14:21:58 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 20 Apr 2025 16:23:46 +0800</lastBuildDate>
     <atom:link href="https://www.sh1no.icu/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Defcon33 Quals wps</title>
+      <link>https://www.sh1no.icu/posts/7e3c0f1/</link>
+      <pubDate>Sun, 20 Apr 2025 16:23:46 +0800</pubDate><author>akalineblog@163.com (Shino)</author>
+      <guid>https://www.sh1no.icu/posts/7e3c0f1/</guid>
+      <description>&lt;p&gt;前一阵子在 Nu1L 队大哥们的带领下在 Defcon33 Quals 中拿到了第 4 名，小写一些游记（其实前几年也有打但是实在没有输出可写&amp;hellip;&lt;/p&gt;</description>
+    </item>
     <item>
       <title>eDBG 开发笔记：从0开始用 eBPF 构建“隐身”的调试器</title>
       <link>https://www.sh1no.icu/posts/aebec83/</link>

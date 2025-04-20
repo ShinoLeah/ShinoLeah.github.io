@@ -11,8 +11,8 @@
     <title>Shino Channel</title><meta name="author" content="Shino">
 <meta name="description" content="">
   <meta itemprop="name" content="Shino Channel">
-  <meta itemprop="datePublished" content="2025-03-23T14:21:58+08:00">
-  <meta itemprop="dateModified" content="2025-03-23T14:21:58+08:00">
+  <meta itemprop="datePublished" content="2025-04-20T16:23:46+08:00">
+  <meta itemprop="dateModified" content="2025-04-20T16:23:46+08:00">
   <meta itemprop="image" content="https://www.sh1no.icu/avr.png"><meta property="og:url" content="https://www.sh1no.icu/">
   <meta property="og:site_name" content="Shino Channel">
   <meta property="og:title" content="Shino Channel">
@@ -107,7 +107,11 @@
     </a><a href="https://space.bilibili.com/96243678" title="bilibili"target="_blank" rel="external nofollow noopener noreferrer me"><i class="fa-brands fa-bilibili" aria-hidden="true"></i>
     </a><a href="mailto:akalineblog@163.com" title="Email"target="_blank" rel="external nofollow noopener noreferrer me"><i class="fa-regular fa-envelope fa-fw" aria-hidden="true"></i>
     </a></div></div>
-<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/posts/aebec83/">EDBG 开发笔记：从0开始用 EBPF 构建“隐身”的调试器</a>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/posts/7e3c0f1/">Defcon33 Quals Wps</a>
+  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/avr.png" alt="Shino" data-title="Shino" width="20" height="20" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;Shino</span></span>&nbsp;<span class="post-publish" title='2025-04-20 16:23:46'>published on <time datetime="2025-04-20">2025-04-20</time></span></div><div class="content">前一阵子在 Nu1L 队大哥们的带领下在 Defcon33 Quals 中拿到了第 4 名，小写一些游记（其实前几年也有打但是实在没有输出可写&hellip;
+</div><div class="post-footer">
+    <a href="/posts/7e3c0f1/">Read More</a></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/posts/aebec83/">EDBG 开发笔记：从0开始用 EBPF 构建“隐身”的调试器</a>
   </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/avr.png" alt="Shino" data-title="Shino" width="20" height="20" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;Shino</span></span>&nbsp;<span class="post-publish" title='2025-03-23 14:21:58'>published on <time datetime="2025-03-23">2025-03-23</time></span></div><div class="content">前言本文主要介绍 eDBG 从 0 到 1（也许只是 0.5）的心路历程和设计过程，也许可能可以给大家一点点启发？
 碎碎念结束了总计时长将近一年的实习，经历了两次互联网大厂的拷打，从 Android 游戏安全做到风险环境和风控，在随手搞定秋招之后，我终于回到学校开始了我的 gap year（其实就是呆在学校搞搞毕业相关的事情的比较不那么忙的一年吧），正好想着可以顺便糊弄毕业设计，就想把我之前的一些灵机一动实现一下。
 由于众所周知的原因，现有的 Android 调试器全都是基于 ptrace 方案的，针对 ptrace 方案的检测非常非常多，每次调试都需要做很多麻烦的绕过（当然大部分时间都是在定位不到或者绕不过去？），用 hook 框架也总是会引入很多不友善的特征，用模拟器的“降维调试”也会直接因为没有合适的传感器数据或者特征文件被识别为风险环境——毕竟在大数据时代，一点风吹草动都会被识别为“离群值”被击毙。
@@ -139,10 +143,6 @@ eDBG 的使用方式与 gdb 的使用方式几乎相同，无需学习便可直�
   </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/avr.png" alt="Shino" data-title="Shino" width="20" height="20" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;Shino</span></span>&nbsp;<span class="post-publish" title='2024-05-28 19:55:39'>published on <time datetime="2024-05-28">2024-05-28</time></span></div><div class="content">前言最近正好做到了针对安卓某 APP 内置浏览器抓包相关的东西，顺手记录一下。
 </div><div class="post-footer">
     <a href="/posts/chromium/">Read More</a></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/posts/0gn/">0ctf/Tctf2023-0gn Nodejs引擎魔改分析</a>
-  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/avr.png" alt="Shino" data-title="Shino" width="20" height="20" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;Shino</span></span>&nbsp;<span class="post-publish" title='2023-12-13 20:24:36'>published on <time datetime="2023-12-13">2023-12-13</time></span></div><div class="content">碎碎念本文也可以改名《Shino 为什么是一个啥比》，一个首波逆向题坐牢两天没做出来（还是我太菜了）
-</div><div class="post-footer">
-    <a href="/posts/0gn/">Read More</a></div>
 </article><ul class="pagination"><li class="page-item active">
           <span class="page-link">
             <a href="/">1</a>
@@ -159,7 +159,7 @@ eDBG 的使用方式与 gdb 的使用方式几乎相同，无需学习便可直�
           <span class="page-link" aria-hidden="true">&hellip;</span>
         </li><li class="page-item">
           <span class="page-link">
-            <a href="/page/6/">6</a>
+            <a href="/page/7/">7</a>
           </span>
         </li></ul></div></main><footer class="footer">
     <div class="footer-container"><div class="footer-line powered">Powered by <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.144.2"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> | Theme - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.17-8b402129"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
