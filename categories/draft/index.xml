@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Draft - Category - Shino Channel</title>
-    <link>http://localhost:1313/categories/draft/</link>
+    <link>https://www.sh1no.icu/categories/draft/</link>
     <description>Shino Channel</description>
     <generator>Hugo 0.144.2 &amp; FixIt v0.3.17-8b402129</generator>
     <language>zh-CN</language>
     <managingEditor>akalineblog@163.com (Shino)</managingEditor>
     <webMaster>akalineblog@163.com (Shino)</webMaster>
-    <lastBuildDate>Sun, 20 Apr 2025 16:23:46 +0800</lastBuildDate>
-    <atom:link href="http://localhost:1313/categories/draft/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 26 May 2025 15:20:58 +0800</lastBuildDate>
+    <atom:link href="https://www.sh1no.icu/categories/draft/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Defcon33 Quals wps</title>
-      <link>http://localhost:1313/posts/7e3c0f1/</link>
-      <pubDate>Sun, 20 Apr 2025 16:23:46 +0800</pubDate>
-      <guid>http://localhost:1313/posts/7e3c0f1/</guid>
-      <category domain="http://localhost:1313/categories/draft/">Draft</category>
-      <description>&lt;p&gt;前一阵子在 Nu1L 队大哥们的带领下在 Defcon33 Quals 中拿到了第 4 名，小写一些游记（其实前几年也有打但是实在没有输出可写&amp;hellip;&lt;/p&gt;</description>
+      <title>JQCTF2025 Customize Virtual Machine Official Writeup</title>
+      <link>https://www.sh1no.icu/posts/ec3a8ff/</link>
+      <pubDate>Mon, 26 May 2025 15:20:58 +0800</pubDate>
+      <guid>https://www.sh1no.icu/posts/ec3a8ff/</guid>
+      <category domain="https://www.sh1no.icu/categories/draft/">Draft</category>
+      <description>&lt;p&gt;大意是用输入的 50 位 flag 解密 vm 的 handler 然后需要正确输出对应字符串，函数地址和长度表在二进制文件里直接给了，可以直接提取。&lt;/p&gt;&#xA;&lt;p&gt;注意到前 15 个是全部解密，后 35 个少解密一个字节，不难想到常规函数的最后一个字节都是 retn 指令 0xC3，利用这个特性可以解出前 15 byte 的 flag 并且获得 15 个函数样本，不难发现所有被加密的 Handler 的模式都是大致相同的，可以用这些样本预测后续的函数。&lt;/p&gt;&#xA;&lt;p&gt;后续 35 字节需要爆破，根据 flag 格式字符范围在 36 个左右，先判断解密结果有没有包含非法指令（用 pwntools 反汇编就是不出现 bad 或 byte），如果没有的话直接把解密结果和之前的 15 个样本喂给 AI 判断相似程度即可。&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

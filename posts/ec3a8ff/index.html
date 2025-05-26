@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>JQCTF2025 Customize Virtual Machine Official Writeup - Shino Channel</title><meta name="author" content="">
+<meta name="description" content="大意是用输入的 50 位 flag 解密 vm 的 handler 然后需要正确输出对应字符串，函数地址和长度表在二进制文件里直接给了，可以直接提取。
+注意到前 15 个是全部解密，后 35 个少解密一个字节，不难想到常规函数的最后一个字节都是 retn 指令 0xC3，利用这个特性可以解出前 15 byte 的 flag 并且获得 15 个函数样本，不难发现所有被加密的 Handler 的模式都是大致相同的，可以用这些样本预测后续的函数。
+后续 35 字节需要爆破，根据 flag 格式字符范围在 36 个左右，先判断解密结果有没有包含非法指令（用 pwntools 反汇编就是不出现 bad 或 byte），如果没有的话直接把解密结果和之前的 15 个样本喂给 AI 判断相似程度即可。
+"><meta name="keywords" content='draft'>
+  <meta itemprop="name" content="JQCTF2025 Customize Virtual Machine Official Writeup">
+  <meta itemprop="description" content="大意是用输入的 50 位 flag 解密 vm 的 handler 然后需要正确输出对应字符串，函数地址和长度表在二进制文件里直接给了，可以直接提取。
+注意到前 15 个是全部解密，后 35 个少解密一个字节，不难想到常规函数的最后一个字节都是 retn 指令 0xC3，利用这个特性可以解出前 15 byte 的 flag 并且获得 15 个函数样本，不难发现所有被加密的 Handler 的模式都是大致相同的，可以用这些样本预测后续的函数。
+后续 35 字节需要爆破，根据 flag 格式字符范围在 36 个左右，先判断解密结果有没有包含非法指令（用 pwntools 反汇编就是不出现 bad 或 byte），如果没有的话直接把解密结果和之前的 15 个样本喂给 AI 判断相似程度即可。">
+  <meta itemprop="datePublished" content="2025-05-26T15:20:58+08:00">
+  <meta itemprop="dateModified" content="2025-05-26T15:20:58+08:00">
+  <meta itemprop="wordCount" content="597">
+  <meta itemprop="image" content="https://www.sh1no.icu/avr.png">
+  <meta itemprop="keywords" content="Draft"><meta property="og:url" content="https://www.sh1no.icu/posts/ec3a8ff/">
+  <meta property="og:site_name" content="Shino Channel">
+  <meta property="og:title" content="JQCTF2025 Customize Virtual Machine Official Writeup">
+  <meta property="og:description" content="大意是用输入的 50 位 flag 解密 vm 的 handler 然后需要正确输出对应字符串，函数地址和长度表在二进制文件里直接给了，可以直接提取。
+注意到前 15 个是全部解密，后 35 个少解密一个字节，不难想到常规函数的最后一个字节都是 retn 指令 0xC3，利用这个特性可以解出前 15 byte 的 flag 并且获得 15 个函数样本，不难发现所有被加密的 Handler 的模式都是大致相同的，可以用这些样本预测后续的函数。
+后续 35 字节需要爆破，根据 flag 格式字符范围在 36 个左右，先判断解密结果有没有包含非法指令（用 pwntools 反汇编就是不出现 bad 或 byte），如果没有的话直接把解密结果和之前的 15 个样本喂给 AI 判断相似程度即可。">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-05-26T15:20:58+08:00">
+    <meta property="article:modified_time" content="2025-05-26T15:20:58+08:00">
+    <meta property="article:tag" content="Draft">
+    <meta property="og:image" content="https://www.sh1no.icu/avr.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://www.sh1no.icu/avr.png">
+  <meta name="twitter:title" content="JQCTF2025 Customize Virtual Machine Official Writeup">
+  <meta name="twitter:description" content="大意是用输入的 50 位 flag 解密 vm 的 handler 然后需要正确输出对应字符串，函数地址和长度表在二进制文件里直接给了，可以直接提取。
+注意到前 15 个是全部解密，后 35 个少解密一个字节，不难想到常规函数的最后一个字节都是 retn 指令 0xC3，利用这个特性可以解出前 15 byte 的 flag 并且获得 15 个函数样本，不难发现所有被加密的 Handler 的模式都是大致相同的，可以用这些样本预测后续的函数。
+后续 35 字节需要爆破，根据 flag 格式字符范围在 36 个左右，先判断解密结果有没有包含非法指令（用 pwntools 反汇编就是不出现 bad 或 byte），如果没有的话直接把解密结果和之前的 15 个样本喂给 AI 判断相似程度即可。">
+      <meta name="twitter:site" content="@ShinoLeah">
+<meta name="twitter:creator" content="@ShinoLeah" /><meta name="application-name" content="Shino Channel">
+<meta name="apple-mobile-web-app-title" content="Shino Channel"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" type="text/html" href="https://www.sh1no.icu/posts/ec3a8ff/" title="JQCTF2025 Customize Virtual Machine Official Writeup - Shino Channel" /><link rel="prev" type="text/html" href="https://www.sh1no.icu/posts/7e3c0f1/" title="Defcon33 Quals wps" /><link rel="alternate" type="text/markdown" href="https://www.sh1no.icu/posts/ec3a8ff/index.md" title="JQCTF2025 Customize Virtual Machine Official Writeup - Shino Channel"><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "JQCTF2025 Customize Virtual Machine Official Writeup",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/www.sh1no.icu\/posts\/ec3a8ff\/"
+    },"genre": "posts","keywords": "draft","wordcount":  597 ,
+    "url": "https:\/\/www.sh1no.icu\/posts\/ec3a8ff\/","datePublished": "2025-05-26T15:20:58+08:00","dateModified": "2025-05-26T15:20:58+08:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"description": ""
+  }
+  </script><script src="/js/head/color-scheme.min.js"></script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="Shino Channel"><span class="header-title-text">Shino</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a class="menu-link" href="https://www.youtube.com/@anoofficialchannel" rel="noopener noreferrer" target="_blank"></a></li><li class="menu-item">
+              <a class="menu-link" href="https://www.nu1l.com/" title="Nu1L" rel="noopener noreferrer" target="_blank"><i class="fa-solid fa-paperclip fa-fw fa-sm" aria-hidden="true"></i> Nu1L</a></li><li class="menu-item">
+              <a class="menu-link" href="https://cnss.io/" title="CNSS" rel="noopener noreferrer" target="_blank"><i class="fa-solid fa-paperclip fa-fw fa-sm" aria-hidden="true"></i> CNSS</a></li><li class="menu-item">
+              <a class="menu-link" href="/posts/abooout/" title="About"><i class="fa-solid fa-user fa-fw fa-sm" aria-hidden="true"></i> About</a></li><li class="menu-item">
+              <a class="menu-link" href="/posts/friends/" title="Friends"><i class="fa-solid fa-user-group fa-fw fa-sm" aria-hidden="true"></i> Friends</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="Search..." id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="Switch Theme">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="Shino Channel"><span class="header-title-text">Shino</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="Search..." id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              Cancel
+            </a>
+          </li><li class="menu-item"><a class="menu-link" href="https://www.youtube.com/@anoofficialchannel" rel="noopener noreferrer" target="_blank"></a></li><li class="menu-item"><a class="menu-link" href="https://www.nu1l.com/" title="Nu1L" rel="noopener noreferrer" target="_blank"><i class="fa-solid fa-paperclip fa-fw fa-sm" aria-hidden="true"></i> Nu1L</a></li><li class="menu-item"><a class="menu-link" href="https://cnss.io/" title="CNSS" rel="noopener noreferrer" target="_blank"><i class="fa-solid fa-paperclip fa-fw fa-sm" aria-hidden="true"></i> CNSS</a></li><li class="menu-item"><a class="menu-link" href="/posts/abooout/" title="About"><i class="fa-solid fa-user fa-fw fa-sm" aria-hidden="true"></i> About</a></li><li class="menu-item"><a class="menu-link" href="/posts/friends/" title="Friends"><i class="fa-solid fa-user-group fa-fw fa-sm" aria-hidden="true"></i> Friends</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="Switch Theme"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="Collections"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span title="Repost" class="icon-repost"><i class="fa-solid fa-share fa-fw" aria-hidden="true"></i></span><span>JQCTF2025 Customize Virtual Machine Official Writeup</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><i class="fa-solid fa-user-circle" aria-hidden="true"></i>
+      Anonymous</span></span><span class="post-included-in">&nbsp;included in <a href="/categories/draft/" class="post-category" title="Category - Draft"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Draft</a></span></div><div class="post-meta-line"><span title="published on 2025-05-26 15:20:58"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2025-05-26">2025-05-26</time></span>&nbsp;<span title="597 words"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>About 600 words</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>3 minutes</span>&nbsp;</div>
+    </div><div class="content" id="content"><p>大意是用输入的 50 位 flag 解密 vm 的 handler 然后需要正确输出对应字符串，函数地址和长度表在二进制文件里直接给了，可以直接提取。</p>
+<p>注意到前 15 个是全部解密，后 35 个少解密一个字节，不难想到常规函数的最后一个字节都是 retn 指令 0xC3，利用这个特性可以解出前 15 byte 的 flag 并且获得 15 个函数样本，不难发现所有被加密的 Handler 的模式都是大致相同的，可以用这些样本预测后续的函数。</p>
+<p>后续 35 字节需要爆破，根据 flag 格式字符范围在 36 个左右，先判断解密结果有没有包含非法指令（用 pwntools 反汇编就是不出现 bad 或 byte），如果没有的话直接把解密结果和之前的 15 个样本喂给 AI 判断相似程度即可。</p>
+<p>测试用的 gpt-4o-mini，构造的 prompt 如下：</p>
+<blockquote>
+<p>You are now a professional assembly code analyst. There are 20 example code snippets here(separated by =====). You need to determine whether the given code is similar to these example codes. Only needs to be similar to any one of the example code snippets. We consider two code segments to be similar if both code segments perform similar functions. Example code: {sample}, given code: {TestCode}. If similar respond True otherwise False, do not include any additional information.</p></blockquote>
+<p>exp 如下，脸黑网慢的话大概要跑个 15 分钟左右。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span><span class="lnt">76
+</span><span class="lnt">77
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">pwn</span> <span class="kn">import</span> <span class="o">*</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">openai</span> <span class="kn">import</span> <span class="n">OpenAI</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">#Function address table 0x47C0</span>
+</span></span><span class="line"><span class="cl"><span class="n">addr</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4592</span><span class="p">,</span> <span class="mi">4704</span><span class="p">,</span> <span class="mi">4816</span><span class="p">,</span> <span class="mi">4928</span><span class="p">,</span> <span class="mi">5008</span><span class="p">,</span> <span class="mi">5136</span><span class="p">,</span> <span class="mi">5248</span><span class="p">,</span> <span class="mi">5344</span><span class="p">,</span> <span class="mi">5376</span><span class="p">,</span> <span class="mi">5504</span><span class="p">,</span> <span class="mi">5520</span><span class="p">,</span> <span class="mi">5632</span><span class="p">,</span> <span class="mi">5776</span><span class="p">,</span> <span class="mi">5856</span><span class="p">,</span> <span class="mi">5936</span><span class="p">,</span> <span class="mi">6032</span><span class="p">,</span> <span class="mi">6160</span><span class="p">,</span> <span class="mi">6192</span><span class="p">,</span> <span class="mi">6240</span><span class="p">,</span> <span class="mi">6352</span><span class="p">,</span> <span class="mi">6464</span><span class="p">,</span> <span class="mi">6576</span><span class="p">,</span> <span class="mi">6672</span><span class="p">,</span> <span class="mi">6800</span><span class="p">,</span> <span class="mi">6912</span><span class="p">,</span> <span class="mi">6928</span><span class="p">,</span> <span class="mi">7056</span><span class="p">,</span> <span class="mi">7152</span><span class="p">,</span> <span class="mi">7184</span><span class="p">,</span> <span class="mi">7296</span><span class="p">,</span> <span class="mi">7328</span><span class="p">,</span> <span class="mi">7424</span><span class="p">,</span> <span class="mi">7536</span><span class="p">,</span> <span class="mi">7568</span><span class="p">,</span> <span class="mi">7648</span><span class="p">,</span> <span class="mi">7664</span><span class="p">,</span> <span class="mi">7776</span><span class="p">,</span> <span class="mi">7872</span><span class="p">,</span> <span class="mi">7968</span><span class="p">,</span> <span class="mi">8080</span><span class="p">,</span> <span class="mi">8176</span><span class="p">,</span> <span class="mi">8256</span><span class="p">,</span> <span class="mi">8336</span><span class="p">,</span> <span class="mi">8464</span><span class="p">,</span> <span class="mi">8560</span><span class="p">,</span> <span class="mi">8688</span><span class="p">,</span> <span class="mi">8800</span><span class="p">,</span> <span class="mi">8832</span><span class="p">,</span> <span class="mi">8960</span><span class="p">,</span> <span class="mi">9072</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Function length table 0x46E0</span>
+</span></span><span class="line"><span class="cl"><span class="n">lens</span> <span class="o">=</span> <span class="p">[</span><span class="mi">109</span><span class="p">,</span> <span class="mi">109</span><span class="p">,</span> <span class="mi">108</span><span class="p">,</span> <span class="mi">78</span><span class="p">,</span> <span class="mi">119</span><span class="p">,</span> <span class="mi">98</span><span class="p">,</span> <span class="mi">84</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">117</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">97</span><span class="p">,</span> <span class="mi">138</span><span class="p">,</span> <span class="mi">76</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">94</span><span class="p">,</span> <span class="mi">113</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">42</span><span class="p">,</span> <span class="mi">110</span><span class="p">,</span> <span class="mi">107</span><span class="p">,</span> <span class="mi">99</span><span class="p">,</span> <span class="mi">93</span><span class="p">,</span> <span class="mi">120</span><span class="p">,</span> <span class="mi">109</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">83</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="mi">112</span><span class="p">,</span> <span class="mi">29</span><span class="p">,</span> <span class="mi">87</span><span class="p">,</span> <span class="mi">112</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="mi">75</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">105</span><span class="p">,</span> <span class="mi">86</span><span class="p">,</span> <span class="mi">84</span><span class="p">,</span> <span class="mi">101</span><span class="p">,</span> <span class="mi">91</span><span class="p">,</span> <span class="mi">77</span><span class="p">,</span> <span class="mi">79</span><span class="p">,</span> <span class="mi">113</span><span class="p">,</span> <span class="mi">88</span><span class="p">,</span> <span class="mi">121</span><span class="p">,</span> <span class="mi">102</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">122</span><span class="p">,</span> <span class="mi">110</span><span class="p">,</span> <span class="mi">98</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">sample</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">flag</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Use Byte retn to get first 15 byte of flag and sample functions.</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">15</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&#34;customVM&#34;</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">data</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())[</span><span class="n">addr</span><span class="p">[</span><span class="n">j</span><span class="p">]:</span><span class="n">addr</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">+</span><span class="n">lens</span><span class="p">[</span><span class="n">j</span><span class="p">]]</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">key</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">^</span><span class="mh">0xc3</span>
+</span></span><span class="line"><span class="cl">    <span class="n">flag</span> <span class="o">+=</span> <span class="nb">chr</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">c</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">c</span> <span class="o">+=</span> <span class="p">(</span><span class="n">_</span><span class="o">^</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">byteorder</span><span class="o">=</span><span class="s2">&#34;little&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">assembly_code</span> <span class="o">=</span> <span class="n">disasm</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">arch</span><span class="o">=</span><span class="s1">&#39;amd64&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">=</span><span class="s1">&#39;linux&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">sample</span> <span class="o">+=</span> <span class="n">assembly_code</span><span class="o">+</span><span class="s2">&#34;</span><span class="se">\n</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">sample</span> <span class="o">+=</span> <span class="s2">&#34;============</span><span class="se">\n</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;First 15 byte: &#34;</span><span class="p">,</span> <span class="n">flag</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Use AI to Predict the rest</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">50</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">table</span> <span class="o">=</span> <span class="s2">&#34;0123456789abcdefghijklmnopqrstuvwxyz_&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">table</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">got</span> <span class="o">=</span> <span class="kc">False</span>
+</span></span><span class="line"><span class="cl">        <span class="n">i</span> <span class="o">=</span> <span class="nb">ord</span><span class="p">(</span><span class="n">ii</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">c</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&#34;customVM&#34;</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">machine_code</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())[</span><span class="n">addr</span><span class="p">[</span><span class="n">j</span><span class="p">]:</span><span class="n">addr</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">+</span><span class="n">lens</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">machine_code</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">c</span> <span class="o">+=</span> <span class="p">(</span><span class="n">_</span><span class="o">^</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">byteorder</span><span class="o">=</span><span class="s2">&#34;little&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">      
+</span></span><span class="line"><span class="cl">        <span class="n">TestCode</span> <span class="o">=</span> <span class="n">disasm</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">arch</span><span class="o">=</span><span class="s1">&#39;amd64&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">=</span><span class="s1">&#39;linux&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">runnable</span> <span class="o">=</span> <span class="kc">True</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">lines</span> <span class="ow">in</span> <span class="n">TestCode</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="s2">&#34;byte&#34;</span> <span class="ow">in</span> <span class="n">lines</span> <span class="ow">or</span> <span class="s2">&#34;(bad)&#34;</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span> <span class="c1"># Not Runnable Code</span>
+</span></span><span class="line"><span class="cl">                <span class="n">runnable</span> <span class="o">=</span> <span class="kc">False</span>
+</span></span><span class="line"><span class="cl">                <span class="k">break</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">runnable</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;TESTING: &#34;</span><span class="p">,</span> <span class="n">ii</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="n">TestCode</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;============&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">prompt</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&#34;You are now a professional assembly code analyst. There are 20 example code snippets here(separated by =====). You need to determine whether the given code is similar to these example codes. Only needs to be similar to any one of the example code snippets. We consider two code segments to be similar if both code segments perform similar functions. Example code: </span><span class="si">{</span><span class="n">sample</span><span class="si">}</span><span class="s2">, given code: </span><span class="si">{</span><span class="n">TestCode</span><span class="si">}</span><span class="s2">. If similar respond True otherwise False, do not include any additional information.&#34;</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">            <span class="n">client</span> <span class="o">=</span> <span class="n">OpenAI</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">                <span class="n">base_url</span><span class="o">=</span><span class="s1">&#39;xxxx&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="n">api_key</span><span class="o">=</span><span class="s1">&#39;xxxx&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">chat_completion</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">completions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">                <span class="n">messages</span><span class="o">=</span><span class="p">[</span>
+</span></span><span class="line"><span class="cl">                    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                        <span class="s2">&#34;role&#34;</span><span class="p">:</span> <span class="s2">&#34;user&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                        <span class="s2">&#34;content&#34;</span><span class="p">:</span> <span class="n">prompt</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">                <span class="p">],</span>
+</span></span><span class="line"><span class="cl">                <span class="n">model</span><span class="o">=</span><span class="s2">&#34;gpt-4o-mini&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="n">chat_completion</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="s2">&#34;True&#34;</span> <span class="ow">in</span> <span class="n">chat_completion</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">content</span> <span class="ow">or</span> <span class="s2">&#34;true&#34;</span> <span class="ow">in</span> <span class="n">chat_completion</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">content</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">got</span> <span class="o">=</span> <span class="kc">True</span>
+</span></span><span class="line"><span class="cl">                <span class="n">flag</span> <span class="o">+=</span> <span class="n">ii</span>
+</span></span><span class="line"><span class="cl">                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;Got flag[</span><span class="si">{</span><span class="n">ii</span><span class="si">}</span><span class="s2">]: </span><span class="si">{</span><span class="n">flag</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="k">break</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="ow">not</span> <span class="n">got</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;WARN: TRY AGAIN ON &#34;</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">flag</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div></div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="Updated on 2025-05-26 15:20:58">Updated on 2025-05-26&nbsp;</span>
+      </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/posts/ec3a8ff/index.md" title="Read Markdown" class="link-to-markdown">Read Markdown</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="Share on X" data-sharer="twitter" data-url="https://www.sh1no.icu/posts/ec3a8ff/" data-title="JQCTF2025 Customize Virtual Machine Official Writeup" data-via="ShinoLeah" data-hashtags="draft"><i class="fa-brands fa-x-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="Share on Facebook" data-sharer="facebook" data-url="https://www.sh1no.icu/posts/ec3a8ff/" data-hashtag="draft"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="Share on 微博" data-sharer="weibo" data-url="https://www.sh1no.icu/posts/ec3a8ff/" data-title="JQCTF2025 Customize Virtual Machine Official Writeup"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/draft/" class="post-tag" title="Tags - Draft">Draft</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+    </section>
+  </div><div class="post-nav"><a href="/posts/7e3c0f1/" class="post-nav-item" rel="prev" title="Defcon33 Quals Wps"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>Defcon33 Quals Wps</a></div>
+</div>
+</article>
+
+  <aside class="toc" id="toc-auto" aria-label="Contents"></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">Powered by <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.144.2"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> | Theme - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.17-8b402129"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2020 - 2025</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">Shino</a></span></div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="Back to Top"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric d-none">0%</span>
+        </div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">This website works best with JavaScript enabled.</div>
+  </noscript>
+</div><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script>var postChatConfig={"addButton":true,"backgroundColor":"","blackDom":[".expiration-reminder","meting-js",".lnt"],"bottom":"","defaultChatQuestions":["Shino 是谁？","本站有什么内容？","随便推荐一篇文章"],"defaultInput":false,"defaultSearchQuestions":[],"fill":"","frameHeight":"","frameWidth":"","height":"","left":"","showInviteLink":true,"upLoadWeb":true,"userDesc":"","userIcon":"","userMode":"magic","userTitle":"","width":""}</script><script src="https://ai.tianli0.top/static/public/postChatUser.min.js" defer data-postChat_key="94e33c8ca2fc6b925063d733c79bb98c27972f8f"></script><script>window.config={"code":{"copyTitle":"Copy to clipboard","editLockTitle":"Lock editable code block","editUnLockTitle":"Unlock editable code block","editable":true,"maxShownLines":50},"comment":{"enable":false},"enablePWA":true,"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/search.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"No results found","snippetLength":30,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"version":"v0.3.17-8b402129"};</script><script src="/js/theme.min.js" defer></script></body>
+</html>
