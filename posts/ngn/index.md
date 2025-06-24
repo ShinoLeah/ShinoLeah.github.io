@@ -27,9 +27,9 @@
 
 - Fire Emblem：Engage [10/10]
 
-- 月姬 [10/10]
+- Elden Ring [9/10]
 
-- 宇宙机器人[9/10]
+- 宇宙机器人 [9/10]
 
 - Life is strange [9/10]
 
@@ -37,7 +37,7 @@
 
 - Memories Off 8 [9/10]
 
-- Elden Ring [9/10]
+- 月姬 [9/10]
 
 - Persona5 Royal [9/10]
 
@@ -51,7 +51,7 @@
 
 - Stella Blade [8/10]
 
-- 装甲核心6境界天火 [8/10]
+- 第一狂战士：卡赞 [8/10]
 
 - Rimworld [8/10]
 
@@ -63,13 +63,11 @@
 
 - 9-nine [8/10]
 
-- Superliminal [8/10]
-
 - 恋爱绮谭 1&amp;2 [8/10]
 
 - Splatoon 3 [8/10]
 
-- Superliminal [8/10]
+- Superliminal [7/10]
 
 - Life is strange: True colors [7/10]
 
@@ -85,11 +83,21 @@
 
 - 审判之眼：死神的遗言 [7/10]
 
+- Detroid: Become Human [7/10]
+
+- 幻想生活i：转圈圈的龙和偷取时间的少女 [7/10]
+
 - FINAL FANTASY XV [7/10]
 
-- 海沙风云 [7/10]
+- 如龙8 [7/10]
+
+- Split Fiction [7/10]
+
+- Monster Hunter: Rise [7/10]
 
 - 终焉的木兰花 [7/10]
+
+- 海沙风云 [6/10]
 
 - 弹丸论破V3 [6/10]
 
@@ -99,8 +107,6 @@
 
 - 浪人崛起 [6/10]
 
-- Monster Hunter: Rise [6/10]
-
 - Death Stranding [6/10]
 
 - VA-11 Hall-A [6/10]
@@ -109,13 +115,17 @@
 
 - 双人成行 [6/10]
 
+- 光与影：33号远征队 [6/10]
+
 - 真三国无双：起源 [6/10]
 
 - 暗喻幻想 [6/10]
 
-- 黑神话：悟空[6/10]
+- 苏丹的游戏 [6/10]
 
-- Phigros [6/10]
+  ----
+
+- 黑神话：悟空 [5/10]
 
 - Memories Off 7：勾指起誓的记忆 [5/10]
 
@@ -124,6 +134,8 @@
 - Fate/Samurai Remnant [5/10]
 
 - Granblue Fantasy: Relink [5/10]
+
+- Until Then [5/10]
 
 - 极限竞速：地平线4 [5/10]
 
@@ -159,7 +171,11 @@
 
 - CODE VEIN [4/10]
 
+- Everlasting Flowers [4/10]
+
 - 超侦探事件簿：雾雨迷宫 [4/10]
+
+- 百日战纪 [4/10]
 
 - 真女神转生5复仇 [4/10]
 
@@ -173,8 +189,6 @@
 
 - 星光咖啡馆与死神之蝶 [4/10]
 
-- Everlasting Flowers [4/10]
-
 - Fire Emblem：风花雪月 [4/10]
 
 - Tales of Arise [4/10]
@@ -182,6 +196,8 @@
 - Parquet [4/10]
 
 - 主播女孩重度依赖 [4/10]
+
+- 情感反诈模拟器 [4/10]
 
 - Sea of stars [4/10]
 
@@ -197,6 +213,8 @@
 
 - LOOPERS [3/10]
 
+- 优米娅的炼金工坊 [3/10]
+
 - 人类一败涂地 [3/10]
 
 - 尼尔机械纪元 [3/10]
@@ -205,15 +223,11 @@
 
 - FINAL FANTASY XVI [3/10]
 
-- Crymachina [3/10]
-
 - Shenmue III [3/10]
 
 - 绝区零 [3/10]
 
 - BLUE REFLECTION [2/10]
-
-- 不可思议的幻想乡TOD RELOADED [2/10]
 
   
 
